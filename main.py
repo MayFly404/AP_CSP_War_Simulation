@@ -106,10 +106,10 @@ def init_game() -> (list, list):
     the new one.
     
     """
-    grid_size = 10
+    grid_size = 50
     grid = create_grid(grid_size)
     
-    number_of_countries = 60
+    number_of_countries = 9
     
     generated_countries = [generate_random_country(i) for i in range(1, number_of_countries + 1)]
     country_ids = [c.country_id for c in generated_countries if c is not None]
@@ -130,7 +130,4 @@ def init_game() -> (list, list):
 if __name__ == "__main__":
     divided_grid, generated_countries = init_game()
 
-    country_ids = [country.country_id for country in generated_countries if country is not None]
-    
-    for country_id in country_ids:
-        print(f"Country-{country_id}: Country-{evaluate_situation(country_id, divided_grid)}")
+    evaluate_situation(generated_countries, divided_grid)
