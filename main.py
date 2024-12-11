@@ -106,7 +106,7 @@ def init_game() -> (list, list):
     the new one.
     
     """
-    grid_size = 50
+    grid_size = 20
     grid = create_grid(grid_size)
     
     number_of_countries = 9
@@ -127,7 +127,23 @@ def init_game() -> (list, list):
     return divided_grid, generated_countries
     
 
+def display_board(grid):
+    """Display the current state of the board with borders."""
+    for row in grid:
+        print('+---' * len(row) + '+')
+        print('|', end=' ')
+        for cell in row:
+            print(f'{cell}', end=' | ')
+        print()
+    print('+---' * len(grid[0]) + '+')
+
 if __name__ == "__main__":
     divided_grid, generated_countries = init_game()
 
-    evaluate_situation(generated_countries, divided_grid)
+    while True:
+        os.system('clear')
+        print("\nCurrent Board State:")
+        display_board(divided_grid)
+        print("\nCountry Actions:")
+        evaluate_situation(generated_countries, divided_grid)
+        input("\nPress Enter to continue...")
