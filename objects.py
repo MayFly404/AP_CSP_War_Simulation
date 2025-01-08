@@ -10,8 +10,11 @@ class Country:
         treaties=[],
         morale=0,
         stability=0,
+        starting_territories = 0,
         population=0,
-        land_size=0
+        land_size=0,
+        territories=[],
+        land_taken={}
     ):
         self.country_id = country_id
         self.name = name
@@ -22,9 +25,11 @@ class Country:
         self.treaties = treaties
         self.morale = morale
         self.stability = stability
+        self.starting_territories = 0,
         self.population = population
         self.land_size = land_size
         self.territories = []
+        self.land_taken = land_taken
 
     def annex_territory(self, x, y):
         """Annex a new territory to the in-memory territories list."""
@@ -32,8 +37,10 @@ class Country:
             self.territories.append((x, y))
             self.land_size += 1
 
-    def die(self):
+    def die(self, grid):
         """Clears the country's data, simulating removal."""
+        for x, y in self.territories:
+            grid[x][y] = "🔥"
         self.territories.clear()
         self.land_size = 0
 

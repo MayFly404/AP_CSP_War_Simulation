@@ -1,6 +1,6 @@
-import psycopg2
 import os
 import random
+import time
 
 from objects import *
 from country_algorithm import *
@@ -97,7 +97,7 @@ def generate_random_country(country_id: int) -> Country:
     return country
 
 
-def init_game() -> (list, list):
+def init_game(grid_size, number_of_countries) -> (list, list):
     """
 
     The init_game function first creats the grid using the `create_grid` function,
@@ -106,44 +106,88 @@ def init_game() -> (list, list):
     the new one.
     
     """
-    grid_size = 20
     grid = create_grid(grid_size)
-    
-    number_of_countries = 9
-    
+
+
+
     generated_countries = [generate_random_country(i) for i in range(1, number_of_countries + 1)]
     country_ids = [c.country_id for c in generated_countries if c is not None]
-    
+
     divided_grid = split_grid(grid, country_ids)
-    
-    for row in divided_grid:
-        print(' '.join(str(cell) for cell in row))
-    
+
+    # Assign territories to countries
     for country in generated_countries:
         territories = [(i, j) for i, row in enumerate(divided_grid) for j, c_id in enumerate(row) if c_id == country.country_id]
         for x, y in territories:
             country.annex_territory(x, y)
 
+    for country in generated_countries:
+        territories = [(i, j) for i, row in enumerate(divided_grid) for j, c_id in enumerate(row) if c_id == country.country_id]
+        for x, y in territories:
+            country.annex_territory(x, y)
+        country.starting_territories = len(country.territories)
+
     return divided_grid, generated_countries
+
     
 
+# Emoji mapping for countries
+EMOJI_MAP = {
+    1: "🟩",
+    2: "🟥",
+    3: "🟦",
+    4: "🟨",
+    5: "🟪",
+    6: "🟧",
+    7: "🟫",
+    8: "⬛",
+    9: "⬜",
+    0: "🔥"  # Default for unoccupied territories
+}
+
 def display_board(grid):
-    """Display the current state of the board with borders."""
+    """Display the current state of the board with borders and emojis."""
     for row in grid:
-        print('+---' * len(row) + '+')
-        print('|', end=' ')
         for cell in row:
-            print(f'{cell}', end=' | ')
+            # Use the emoji mapping to display the grid
+            print(f'{EMOJI_MAP.get(cell, "🔥")}', end='')
         print()
-    print('+---' * len(grid[0]) + '+')
 
 if __name__ == "__main__":
-    divided_grid, generated_countries = init_game()
+    grid_size: int = int(input("Grid width and height: "))
+    number_of_nations: int = int(input("Number of nations: "))
+    divided_grid, generated_countries = init_game(grid_size, number_of_nations)
 
-    while True:
-        os.system('clear')
-        print("\nCurrent Board State:")
-        display_board(divided_grid)
-        print("\nCountry Actions:")
-        evaluate_situation(generated_countries, divided_grid)
-        input("\nPress Enter to continue...")
+    c = input("\nPress Enter to continue True or False for logs: ")
+
+    if c == 'True':
+        while True:
+            os.system('clear')
+    
+            
+            
+            print("\nCurrent Board State:")
+            display_board(divided_grid)
+            
+            print("\nCountry Actions:")
+            
+            evaluate_situation(generated_countries, divided_grid, True)
+            
+            time.sleep(1)
+
+    elif c == 'False':
+        while True:
+            os.system('clear')
+
+
+
+            print("\nCurrent Board State:")
+            display_board(divided_grid)
+
+            print("\nCountry Actions:")
+
+            evaluate_situation(generated_countries, divided_grid, False)
+
+            time.sleep(1)
+    else:
+        print("Invalid, exiting program...")
